@@ -231,6 +231,8 @@ const adminUpload = async (req, res, next) => {
       "products"
     );
 
+    let product = await Product.findById(req.query.productId).orFail();
+
     let imagesTable = [];
     if (Array.isArray(req.files.images)) {
       imagesTable = req.files.images;
@@ -239,15 +241,16 @@ const adminUpload = async (req, res, next) => {
     }
 
     for (let image of imagesTable) {
-      var uploadPath =
-        uploadDirectory + "/" + uuidv4() + path.extname(image.name);
+      var fileName = uuidv4() + path.extname(image.name);
+      var uploadPath = uploadDirectory + "/" + fileName;
+      product.images.push({ path: "/images/products/" + fileName });
       image.mv(uploadPath, function (err) {
         if (err) {
           return res.status(500).send(err);
         }
       });
     }
-
+    await product.save();
     return res.send("Files uploaded!");
   } catch (err) {
     next(err);
