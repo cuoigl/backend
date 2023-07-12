@@ -1,4 +1,5 @@
 const User = require("../models/UserModel");
+const { hashPassword } = require("../utils/hashPassword");
 
 const getUsers = async (req, res, next) => {
   try {
@@ -20,11 +21,12 @@ const registerUser = async (req, res, next) => {
     if (userExists) {
       return res.status(400).json({ error: "user exists" });
     } else {
+      const hashedPassword = hashPassword(password);
       const user = await User.create({
         name,
         lastName,
         email: email.toLowerCase(),
-        password: password,
+        password: hashedPassword,
       });
       res.status(201).send(user);
     }
