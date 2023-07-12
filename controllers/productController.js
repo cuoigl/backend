@@ -33,6 +33,26 @@ const getProducts = async (req, res, next) => {
         category: { $in: a },
       };
     }
+    let attrsQueryCondition = [];
+    if (req.query.attrs) {
+      // attrs=RAM-1TB-2TB-4TB,color-blue-red
+      // [ 'RAM-1TB-4TB', 'color-blue', '' ]
+      attrsQueryCondition = req.query.attrs.split(",").reduce((acc, item) => {
+        if (item) {
+          let a = item.split("-");
+          let values = [...a];
+          values.shift(); // removes first item
+          let a1 = {
+            attrs: { $elemMatch: { key: a[0], value: { $in: values } } },
+          };
+          acc.push(a1);
+          // console.dir(acc, { depth: null })
+          return acc;
+        } else return acc;
+      }, []);
+      //   console.dir(attrsQueryCondition, { depth: null });
+      queryCondition = true;
+    }
 
     if (queryCondition) {
       query = {
@@ -40,6 +60,7 @@ const getProducts = async (req, res, next) => {
           priceQueryCondition,
           ratingQueryCondition,
           categoryQueryCondition,
+          ...attrsQueryCondition,
         ],
       };
     }
