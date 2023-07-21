@@ -1,6 +1,7 @@
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
@@ -17,6 +18,9 @@ app.get("/", async (req, res, next) => {
 // mongodb connection
 const connectDB = require("./config/db");
 connectDB();
+
+app.use(cors());
+app.options("*", cors());
 
 app.use("/api", apiRoutes);
 

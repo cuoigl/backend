@@ -254,7 +254,7 @@ const updateUser = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).orFail();
-    await user.remove();
+    await user.deleteOne();
     res.send("user removed");
   } catch (err) {
     next(err);
