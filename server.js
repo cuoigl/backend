@@ -19,8 +19,12 @@ app.get("/", async (req, res, next) => {
 const connectDB = require("./config/db");
 connectDB();
 
-app.use(cors());
-app.options("*", cors());
+const corsOptions = {
+  origin: "http://localhost:3001",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 app.use("/api", apiRoutes);
 
