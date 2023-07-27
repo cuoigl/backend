@@ -156,7 +156,7 @@ const getUserProfile = async (req, res, next) => {
 
 const writeReview = async (req, res, next) => {
   try {
-    const session = await Review.startSession();
+    const session = await Review.StartSession();
 
     // get comment, rating from request.body:
     const { comment, rating } = req.body;
@@ -206,10 +206,11 @@ const writeReview = async (req, res, next) => {
       product.reviewsNumber = 1;
     } else {
       product.reviewsNumber = product.reviews.length;
-      product.rating =
+      let ratingCalc =
         prc
           .map((item) => Number(item.rating))
           .reduce((sum, item) => sum + item, 0) / product.reviews.length;
+      product.rating = Math.round(ratingCalc);
     }
     await product.save();
 
@@ -240,7 +241,7 @@ const updateUser = async (req, res, next) => {
     user.name = req.body.name || user.name;
     user.lastName = req.body.lastName || user.lastName;
     user.email = req.body.email || user.email;
-    user.isAdmin = req.body.isAdmin || user.isAdmin;
+    user.isAdmin = req.body.isAdmin;
 
     await user.save();
 
@@ -253,7 +254,7 @@ const updateUser = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).orFail();
-    await user.remove();
+    await user.deleteOne();
     res.send("user removed");
   } catch (err) {
     next(err);
